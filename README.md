@@ -19,7 +19,7 @@ An implementation of [@adiwajshing/Baileys](https://github.com/adiwajshing/Baile
 HOST=127.0.0.1
 
 # Listening Port
-PORT=8000
+PORT=10000
 
 # Maximum Reconnect Attempts
 MAX_RETRIES=5
