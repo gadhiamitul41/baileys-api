@@ -9,7 +9,9 @@ const send = async (req, res) => {
     const session = getSession(res.locals.sessionId)
     const receiver = formatPhone(req.body.receiver)
     const {message} = req.body
-
+    
+    if (!isSessionExists(sessionId)) { return response(res, 404, false, 'Session not found.') }
+    
     try {
         const exists = await isExists(session, receiver)
 
