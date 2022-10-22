@@ -192,12 +192,12 @@ const isExists = async (session, jid, isGroup = false) => {
             return Boolean(result.id)
         }
 
-        if (session.isLegacy) {
-            result = await session.onWhatsApp(jid)
-        } else {
-            ;[result] = await session.onWhatsApp(jid)
-        }
-
+//         if (session.isLegacy) {
+//             result = await session.onWhatsApp(jid)
+//         } else {
+            const [result] = await session.onWhatsApp(jid)
+//         }
+        console.log(result);
         return result.exists
     } catch {
         return false
