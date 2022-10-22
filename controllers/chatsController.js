@@ -1,4 +1,4 @@
-import {getSession, getChatList, isExists, sendMessage, formatPhone, isSessionExists} from './../whatsapp.js'
+import { getSession, getChatList, isExists, sendMessage, formatPhone } from './../whatsapp.js'
 import response from './../response.js'
 
 const getList = (req, res) => {
@@ -8,11 +8,7 @@ const getList = (req, res) => {
 const send = async (req, res) => {
     const session = getSession(res.locals.sessionId)
     const receiver = formatPhone(req.body.receiver)
-    const {message} = req.body
-
-    if (!isSessionExists(res.locals.sessionId)) {
-        return response(res, 404, false, 'Session not found.')
-    }
+    const { message } = req.body
 
     try {
         const exists = await isExists(session, receiver)
@@ -21,31 +17,7 @@ const send = async (req, res) => {
             return response(res, 400, false, 'The receiver number is not exists.')
         }
 
-        const response = await sendMessage(session, receiver, message, 0)
-
-        response(res, 200, true, 'The message has been successfully sent.')
-    } catch {
-        response(res, 500, false, 'Failed to send the message.')
-    }
-}
-
-const sendImage = async (req, res) => {
-    const session = getSession(res.locals.sessionId)
-    const receiver = formatPhone(req.body.receiver)
-    const {url} = req.body
-    const {caption} = req.body
-
-    try {
-        const exists = await isExists(session, receiver)
-
-        if (!exists) {
-            return response(res, 400, false, 'The receiver number is not exists.')
-        }
-
-        await sendMessage(session, receiver, {
-            image: {url: url, mimetype: 'image/jpg', jpegThumbnail: url},
-            caption: caption
-        })
+        await sendMessage(session, receiver, message, 0)
 
         response(res, 200, true, 'The message has been successfully sent.')
     } catch {
@@ -58,7 +30,7 @@ const sendBulk = async (req, res) => {
     const errors = []
 
     for (const [key, data] of req.body.entries()) {
-        let {receiver, message, delay} = data
+        let { receiver, message, delay } = data
 
         if (!receiver || !message) {
             errors.push(key)
@@ -98,8 +70,8 @@ const sendBulk = async (req, res) => {
         isAllFailed ? 500 : 200,
         !isAllFailed,
         isAllFailed ? 'Failed to send all messages.' : 'Some messages has been successfully sent.',
-        {errors}
+        { errors }
     )
 }
 
-export {getList, send, sendImage, sendBulk}
+export { getList, send, sendBulk }

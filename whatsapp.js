@@ -1,5 +1,5 @@
-import {rmSync, readdir} from 'fs'
-import {join} from 'path'
+import { rmSync, readdir } from 'fs'
+import { join } from 'path'
 import pino from 'pino'
 import makeWASocket, {
     makeWALegacySocket,
@@ -10,7 +10,7 @@ import makeWASocket, {
     DisconnectReason,
     delay,
 } from '@adiwajshing/baileys'
-import {toDataURL} from 'qrcode'
+import { toDataURL } from 'qrcode'
 import __dirname from './dirname.js'
 import response from './response.js'
 
@@ -34,7 +34,7 @@ const shouldReconnect = (sessionId) => {
     if (attempts < maxRetries) {
         ++attempts
 
-        console.log('Reconnecting...', {attempts, sessionId})
+        console.log('Reconnecting...', { attempts, sessionId })
         retries.set(sessionId, attempts)
 
         return true
@@ -46,15 +46,15 @@ const shouldReconnect = (sessionId) => {
 const createSession = async (sessionId, isLegacy = false, res = null) => {
     const sessionFile = (isLegacy ? 'legacy_' : 'md_') + sessionId + (isLegacy ? '.json' : '')
 
-    const logger = pino({level: 'warn'})
-    const store = makeInMemoryStore({logger})
+    const logger = pino({ level: 'warn' })
+    const store = makeInMemoryStore({ logger })
 
     let state, saveState
 
     if (isLegacy) {
-        ;({state, saveState} = useSingleFileLegacyAuthState(sessionsDir(sessionFile)))
+        ;({ state, saveState } = useSingleFileLegacyAuthState(sessionsDir(sessionFile)))
     } else {
-        ;({state, saveCreds: saveState} = await useMultiFileAuthState(sessionsDir(sessionFile)))
+        ;({ state, saveCreds: saveState } = await useMultiFileAuthState(sessionsDir(sessionFile)))
     }
 
     /**
@@ -77,11 +77,11 @@ const createSession = async (sessionId, isLegacy = false, res = null) => {
         store.bind(wa.ev)
     }
 
-    sessions.set(sessionId, {...wa, store, isLegacy})
+    sessions.set(sessionId, { ...wa, store, isLegacy })
 
     wa.ev.on('creds.update', saveState)
 
-    wa.ev.on('chats.set', ({chats}) => {
+    wa.ev.on('chats.set', ({ chats }) => {
         if (isLegacy) {
             store.chats.insertIfAbsent(...chats)
         }
@@ -105,7 +105,7 @@ const createSession = async (sessionId, isLegacy = false, res = null) => {
     */
 
     wa.ev.on('connection.update', async (update) => {
-        const {connection, lastDisconnect} = update
+        const { connection, lastDisconnect } = update
         const statusCode = lastDisconnect?.error?.output?.statusCode
 
         if (connection === 'open') {
@@ -134,7 +134,7 @@ const createSession = async (sessionId, isLegacy = false, res = null) => {
                 try {
                     const qr = await toDataURL(update.qr)
 
-                    response(res, 200, true, 'QR code received, please scan the QR code.', {qr})
+                    response(res, 200, true, 'QR code received, please scan the QR code.', { qr })
 
                     return
                 } catch {
@@ -162,7 +162,7 @@ const getSession = (sessionId) => {
 const deleteSession = (sessionId, isLegacy = false) => {
     const sessionFile = (isLegacy ? 'legacy_' : 'md_') + sessionId + (isLegacy ? '.json' : '')
     const storeFile = `${sessionId}_store.json`
-    const rmOptions = {force: true, recursive: true}
+    const rmOptions = { force: true, recursive: true }
 
     rmSync(sessionsDir(sessionFile), rmOptions)
     rmSync(sessionsDir(storeFile), rmOptions)
@@ -197,6 +197,7 @@ const isExists = async (session, jid, isGroup = false) => {
         } else {
             ;[result] = await session.onWhatsApp(jid)
         }
+
         return result.exists
     } catch {
         return false
