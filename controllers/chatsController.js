@@ -21,8 +21,7 @@ const send = async (req, res) => {
             return response(res, 400, false, 'The receiver number is not exists.')
         }
 
-        const response = await sendMessage(session, receiver, message)
-        console.log(response)
+        const response = await sendMessage(session, receiver, message, 0)
 
         response(res, 200, true, 'The message has been successfully sent.')
     } catch {
