@@ -9,9 +9,11 @@ const send = async (req, res) => {
     const session = getSession(res.locals.sessionId)
     const receiver = formatPhone(req.body.receiver)
     const {message} = req.body
-    
-    if (!isSessionExists(res.locals.sessionId)) { return response(res, 404, false, 'Session not found.') }
-    
+
+    if (!isSessionExists(res.locals.sessionId)) {
+        return response(res, 404, false, 'Session not found.')
+    }
+
     try {
         const exists = await isExists(session, receiver)
 
@@ -19,7 +21,7 @@ const send = async (req, res) => {
             return response(res, 400, false, 'The receiver number is not exists.')
         }
 
-        const response = await sendMessage(session, receiver,  message)
+        const response = await sendMessage(session, receiver, message)
         console.log(response)
 
         response(res, 200, true, 'The message has been successfully sent.')
@@ -41,7 +43,10 @@ const sendImage = async (req, res) => {
             return response(res, 400, false, 'The receiver number is not exists.')
         }
 
-        await sendMessage(session, receiver, {image: {url: url, mimetype: 'image/jpg', jpegThumbnail: url}, caption: caption})
+        await sendMessage(session, receiver, {
+            image: {url: url, mimetype: 'image/jpg', jpegThumbnail: url},
+            caption: caption
+        })
 
         response(res, 200, true, 'The message has been successfully sent.')
     } catch {
@@ -54,7 +59,7 @@ const sendBulk = async (req, res) => {
     const errors = []
 
     for (const [key, data] of req.body.entries()) {
-        let { receiver, message, delay } = data
+        let {receiver, message, delay} = data
 
         if (!receiver || !message) {
             errors.push(key)
