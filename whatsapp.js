@@ -184,6 +184,7 @@ const getChatList = (sessionId, isGroup = false) => {
  */
 const isExists = async (session, jid, isGroup = false) => {
     try {
+        await delay(parseInt(1000))
         let result
 
         if (isGroup) {
